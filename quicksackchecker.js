@@ -37,9 +37,9 @@ var con = mysql.createConnection(db);
 
 con.connect(function(err) {
  
-  var querystring = "SELECT * FROM qsEpisodeList WHERE title CONTAINS " + filter;
+  var queryString = 'SELECT * FROM `qsEpisodeList` WHERE `title` LIKE "%' + filter + '%"';
   
-  con.query(querystring, function (err, result, fields) {
+  con.query(queryString, function (err, result, fields) {
     if (err) {
       console.log("Error: " + err);
     }
