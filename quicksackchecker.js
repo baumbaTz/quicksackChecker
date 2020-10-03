@@ -44,9 +44,11 @@ con.connect(function(err) {
       console.log("Error: " + err);
     }
     else {
-        //check to see if the result is empty
-        if(result.length > 0){
-            console.log(result);
+      //check to see if the result is empty
+      if(result.length > 0){
+        console.log(result);
+      } else {
+        console.log('No Results');
       }
     }
   });
