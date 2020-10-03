@@ -40,11 +40,21 @@ con.connect(function(err) {
   var querystring = "SELECT * FROM qsEpisodeList WHERE title CONTAINS " + filter;
   
   con.query(querystring, function (err, result, fields) {
-    console.log(result);
+    if (err) {
+      console.log("Error: " + err);
+    }
+    else {
+      //check to see if the result is empty
+      if(result.length > 0){
+        console.log(result);
+      } else {
+        console.log('No Results');
+      }
+    }
   });
 });
 	         
-	  var answer = '@' + msgFROM + ' i guess you are looking for "' + filter + '"';
+	  var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
 	  answerIt(answer, msgID);
     }
   }
