@@ -3,6 +3,7 @@ config.js
 debe.js
 
 .npmrc
+npm-debug.log
 
 package-lock.json
 filmsack-89483-firebase-adminsdk-1zgsp-028400e9e1.json

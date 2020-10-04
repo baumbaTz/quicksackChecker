@@ -1,3 +1,4 @@
+// Be sure to add your twitter API info here
 module.exports = {
   consumer_key:         '',
    consumer_secret:      '',
