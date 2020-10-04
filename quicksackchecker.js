@@ -23,6 +23,7 @@ function question(eventMsg) {
   var msgFROM = eventMsg.user.screen_name.toLowerCase();
   var msgAT   = eventMsg.in_reply_to_screen_name.toLowerCase();
 
+  // looking for bot name
   if(msgTXT.startsWith("@" + botname)) {
     if(msgTXT.includes(keyword)) {
 
@@ -33,30 +34,34 @@ function question(eventMsg) {
       filter = filter.trim();
       console.log(filter);
 	  
-var con = mysql.createConnection(db);
+      var con = mysql.createConnection(db);
 
-con.connect(function(err) {
- 
-  var queryString = 'SELECT * FROM `qsEpisodeList` WHERE `title` LIKE "%' + filter + '%"';
-  
-  con.query(queryString, function (err, result, fields) {
-    if (err) {
-      console.log("Error: " + err);
-    }
-    else {
-      //check to see if the result is empty
-      if(result.length > 0){
-        console.log(result);
-      } else {
-        console.log('No Results');
-      }
-    }
-  });
-});
+      con.connect(function(err) {
+      
+        var queryString = 'SELECT * FROM `qsEpisodeList` WHERE `title` LIKE "%' + filter + '%"';
+        
+        con.query(queryString, function (err, result, fields) {
+          if (err) {
+            console.log("Error: " + err);
+          }
+          else {
+            //check to see if the result is empty
+            if(result.length > 0){
+              console.log(result);
+            } else {
+              console.log('No Results');
+            }
+          }
+        });
+      });
 	         
-	  var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
-	  answerIt(answer, msgID);
+      var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
+      answerIt(answer, msgID);
+    } else {
+      console.log('no keywords');
     }
+  } else {
+    console.log('no bot');
   }
 }
 
