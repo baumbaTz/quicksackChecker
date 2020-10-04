@@ -29,7 +29,7 @@ function question(eventMsg) {
 
       var trigger = execPhp('/var/www/quicksack.li/quicktrigger.php');
 
-      if(trigger) {
+      if(trigger === undefined || trigger === null) {
         filter = msgTXT.replace('@' + msgAT, '');
         filter = filter.replace(keyword, '');
         filter = filter.trim();
