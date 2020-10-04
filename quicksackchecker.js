@@ -27,36 +27,41 @@ function question(eventMsg) {
   if(msgTXT.startsWith("@" + botname)) {
     if(msgTXT.includes(keyword)) {
 
-      execPhp('/var/www/quicksack.li/quicktrigger.php');
+      var trigger = execPhp('/var/www/quicksack.li/quicktrigger.php');
 
-      filter = msgTXT.replace('@' + msgAT, '');
-      filter = filter.replace(keyword, '');
-      filter = filter.trim();
-      console.log(filter);
-	  
-      var con = mysql.createConnection(db);
+      if(trigger) {
+        filter = msgTXT.replace('@' + msgAT, '');
+        filter = filter.replace(keyword, '');
+        filter = filter.trim();
 
-      con.connect(function(err) {
+        console.log(filter);
       
-        var queryString = 'SELECT * FROM `qsEpisodeList` WHERE `title` LIKE "%' + filter + '%"';
+        var con = mysql.createConnection(db);
+
+        con.connect(function(err) {
         
-        con.query(queryString, function (err, result, fields) {
-          if (err) {
-            console.log("Error: " + err);
-          }
-          else {
-            //check to see if the result is empty
-            if(result.length > 0){
-              console.log(result);
-            } else {
-              console.log('No Results');
+          var queryString = 'SELECT * FROM qsEpisodeList WHERE title LIKE "%' + filter + '%"';
+          
+          con.query(queryString, function (err, result, fields) {
+            if (err) {
+              console.log("Error: " + err);
             }
-          }
+            else {
+              //check to see if the result is empty
+              if(result.length > 0){
+                console.log(result);
+              } else {
+                console.log('No Results');
+              }
+            }
+          });
         });
-      });
-	         
-      var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
-      answerIt(answer, msgID);
+            
+        var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
+        answerIt(answer, msgID);
+      } else {
+        console.log('no PHP exec');
+      }
     } else {
       console.log('no keywords');
     }
