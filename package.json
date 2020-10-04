@@ -4,7 +4,11 @@
   "description": "TwitterBot to check quicksack.li for a FilmSack Episode and reply with an answer.",
   "main": "quicksackchecker.js",
   "dependencies": {
+    "ajv": "^6.12.5",
     "exec-php": "0.0.5",
+    "firebase-admin": "^9.2.0",
+    "firestore": "^1.1.6",
+    "grpc": "^1.24.3",
     "mysql": "^2.18.1",
     "twit": "^2.2.11"
   },

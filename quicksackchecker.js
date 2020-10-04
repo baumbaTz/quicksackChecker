@@ -1,69 +1,64 @@
 console.log('QuickSackChecker starting');
 
+const admin = require('firebase-admin');
+var serviceAccount = require("./filmsack-89483-firebase-adminsdk-1zgsp-028400e9e1.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://filmsack-89483.firebaseio.com"
+});
+
+const db = admin.firestore();
+
+
 var Twit = require('twit');
 var config = require('./config');
-var execPhp = require('exec-php');
-var mysql = require('mysql');
-var db = require('./debe');
 
-var T = new Twit(config);
+
+var twit = new Twit(config);
 
 // what to look for
 var botname = "quicksack";
 var keyword = "?sacked";
+var hashtags = ['#filmsackfind'];
 
-var stream = T.stream('statuses/filter', { track: '@quicksack' });
+var stream = twit.stream('statuses/filter', { track: '@quicksack' });
+// var stream = twit.stream('statuses/filter', { track: hashtags, language: 'en' });
+// var hashtags = ['#filmsackfind'];
 
 stream.on('tweet', question);
 
-function question(eventMsg) {
+function question(tweet) {
   
-  var msgID   = eventMsg.id_str;
-  var msgTXT  = eventMsg.text.toLowerCase();
-  var msgFROM = eventMsg.user.screen_name.toLowerCase();
-  var msgAT   = eventMsg.in_reply_to_screen_name.toLowerCase();
+  var msgID   = tweet.id_str;
+  var msgTXT  = tweet.text.toLowerCase();
+  var msgFROM = tweet.user.screen_name.toLowerCase();
+  var msgAT   = tweet.in_reply_to_screen_name.toLowerCase();
 
   // looking for bot name
   if(msgTXT.startsWith("@" + botname)) {
     if(msgTXT.includes(keyword)) {
 
-      var trigger = execPhp('/var/www/quicksack.li/quicktrigger.php');
+      filter = msgTXT.replace('@' + msgAT, '');
+      filter = filter.replace(keyword, '');
+      filter = filter.trim();
 
-      console.log(trigger);
+      console.log(filter);
 
-      if(trigger) {
-        filter = msgTXT.replace('@' + msgAT, '');
-        filter = filter.replace(keyword, '');
-        filter = filter.trim();
+      async function run(){
+        const docRef = db.collection('user').doc('finding');
 
-        console.log(filter);
-      
-        var con = mysql.createConnection(db);
-
-        con.connect(function(err) {
-        
-          var queryString = 'SELECT * FROM qsEpisodeList WHERE title LIKE "%' + filter + '%"';
-          
-          con.query(queryString, function (err, result, fields) {
-            if (err) {
-              console.log("Error: " + err);
-            }
-            else {
-              //check to see if the result is empty
-              if(result.length > 0){
-                console.log(result);
-              } else {
-                console.log('No Results');
-              }
-            }
-          });
+        await docRef.set({
+          from: msgFROM,
+          filter: filter
         });
-            
-        var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
-        answerIt(answer, msgID);
-      } else {
-        console.log('no PHP exec');
       }
+
+      run().catch(e => { console.error(e); process.exit(-1); })
+          
+      var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
+      answerIt(answer, msgID);
+
     } else {
       console.log('no keywords');
     }
@@ -73,13 +68,13 @@ function question(eventMsg) {
 }
 
 function answerIt(txt, id) {
-	var tweet = { 
+	var retweet = { 
       status: txt,
       in_reply_to_status_id: id,
 	}
-	T.post('statuses/update', tweet, function(err, data, response) {
+	twit.post('statuses/update', retweet, function(err, data, response) {
         console.log(".");
 	})
-	console.log(tweet);
+	console.log(retweet);
 }
 
