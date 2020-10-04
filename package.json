@@ -10,7 +10,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node quicksackchecker.js",
+    "start": "quicksackchecker.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "baumbaTz",
