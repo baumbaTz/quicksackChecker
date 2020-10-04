@@ -10,7 +10,7 @@ var T = new Twit(config);
 
 // what to look for
 var botname = "quicksack";
-var keyword = "?sacked";
+var keyword = "?s";
 
 var stream = T.stream('statuses/filter', { track: '@quicksack' });
 
@@ -26,60 +26,56 @@ function question(eventMsg) {
   // looking for bot name
   if(msgTXT.startsWith("@" + botname)) {
     if(msgTXT.includes(keyword)) {
-
       var trigger = execPhp('/var/www/quicksack.li/quicktrigger.php');
-
-      console.log(trigger);
-
-      if(trigger) {
+      
         filter = msgTXT.replace('@' + msgAT, '');
         filter = filter.replace(keyword, '');
         filter = filter.trim();
 
         console.log(filter);
-      
+
         var con = mysql.createConnection(db);
 
         con.connect(function(err) {
-        
+
           var queryString = 'SELECT * FROM qsEpisodeList WHERE title LIKE "%' + filter + '%"';
-          
+
           con.query(queryString, function (err, result, fields) {
             if (err) {
               console.log("Error: " + err);
             }
             else {
               //check to see if the result is empty
-              if(result.length > 0){
-                console.log(result);
+              if(result.length == 1){
+				var tTitle = result[0].title;
+				var tUrl = result[0].url;
+				var tPublished = result[0].published;
+				var answer = '@' + msgFROM + ' I found this Episode:\n' + tTitle + '\nPublished: ' + tPublished + '\n' + tUrl; 
+				answerIt(answer, msgID);
+			  } else if(result.length > 0) {
+				var answer = '@' + msgFROM + ' I found multiple episodes that might fit your search:\nhttps://quicksack.li?f=' + filter;
+				answerIt(answer, msgID);
               } else {
                 console.log('No Results');
+				var answer = '@' + msgFROM + ' It seems that Movie/Show has not been sacked, yet. Or at least i could not find it with the provided query.\nhttps://quicksack.li?f=' + filter;
+				answerIt(answer, msgID);
               }
             }
           });
         });
-            
-        var answer = '@' + msgFROM + ' i guess you are looking for ' + filter + '.';
-        answerIt(answer, msgID);
-      } else {
-        console.log('no PHP exec');
-      }
-    } else {
-      console.log('no keywords');
+
     }
-  } else {
-    console.log('no bot');
   }
 }
 
 function answerIt(txt, id) {
-	var tweet = { 
+  var tweet = {
       status: txt,
       in_reply_to_status_id: id,
-	}
-	T.post('statuses/update', tweet, function(err, data, response) {
+  }
+  T.post('statuses/update', tweet, function(err, data, response) {
         console.log(".");
-	})
-	console.log(tweet);
+  })
+  console.log(tweet);
 }
 
