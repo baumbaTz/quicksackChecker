@@ -1,3 +1,4 @@
+
 console.log('QuickSackChecker starting');
 
 var Twit = require('twit');
@@ -34,19 +35,19 @@ function question(eventMsg) {
         filter = msgTXT.replace('@' + msgAT, '');
         filter = filter.replace(keyword, '');
         filter = filter.trim();
-	filter = filter.strip();
+	    filterArray = filter.split(" ");
 	    
-	filter.createFilterString(myFunction);
-	filterString = filterString.substr(5);
+	    filterArray.forEach(createFilterString);
+	    filterString = filterString.substr(14);
 	    
-	console.log(filterString);
+	    console.log(filterString);
         console.log(filter);
 
         var con = mysql.createConnection(db);
 
         con.connect(function(err) {
 
-          var queryString = 'SELECT * FROM qsEpisodeList WHERE title LIKE "%' + filter + '%"';
+          var queryString = 'SELECT * FROM qsEpisodeList WHERE '+ filterString;
 
           con.query(queryString, function (err, result, fields) {
             if (err) {
@@ -61,11 +62,11 @@ function question(eventMsg) {
 				var answer = '@' + msgFROM + ' I found this Episode:\n' + tTitle + '\nPublished: ' + tPublished + '\n' + tUrl; 
 				answerIt(answer, msgID);
 			  } else if(result.length > 0) {
-				var answer = '@' + msgFROM + ' I found multiple episodes that might fit your search:\nhttps://quicksack.li?f=' + filter;
+				var answer = '@' + msgFROM + ' I found multiple episodes that might fit your search:\nhttps://quicksack.li?f=' + encodeURI(filter);
 				answerIt(answer, msgID);
               } else {
                 console.log('No Results');
-				var answer = '@' + msgFROM + ' It seems that Movie/Show has not been sacked, yet. Or at least i could not find it with the provided query.\nhttps://quicksack.li?f=' + filter;
+				var answer = '@' + msgFROM + ' It seems that Movie/Show has not been sacked, yet. Or at least i could not find it with the provided query.\nhttps://quicksack.li?f=' + encodeURI(filter);
 				answerIt(answer, msgID);
               }
             }
@@ -88,5 +89,5 @@ function answerIt(txt, id) {
 }
 
 function createFilterString(item) {
-  filterString = " AND " + item;
+  filterString = filterString + ' AND title LIKE "%' + item + '%"';
 } 
