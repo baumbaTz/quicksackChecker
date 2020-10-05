@@ -90,4 +90,4 @@ function answerIt(txt, id) {
 
 function createFilterString(item) {
   filterString = filterString + ' AND title LIKE "%' + item + '%"';
-} 
+}
