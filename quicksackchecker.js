@@ -6,6 +6,9 @@ var execPhp = require('exec-php');
 var mysql = require('mysql');
 var db = require('./debe');
 
+var filter;
+var filterString;
+
 var T = new Twit(config);
 
 // what to look for
@@ -31,7 +34,12 @@ function question(eventMsg) {
         filter = msgTXT.replace('@' + msgAT, '');
         filter = filter.replace(keyword, '');
         filter = filter.trim();
-
+	filter = filter.strip();
+	    
+	filter.createFilterString(myFunction);
+	filterString = filterString.substr(5);
+	    
+	console.log(filterString);
         console.log(filter);
 
         var con = mysql.createConnection(db);
@@ -79,3 +87,6 @@ function answerIt(txt, id) {
   console.log(tweet);
 }
 
+function createFilterString(item) {
+  filterString = " AND " + item;
+} 
