@@ -14,7 +14,7 @@ var T = new Twit(config);
 
 // what to look for
 var botname = "quicksack";
-var keyword = "?s";
+//var keyword = "?s";
 
 var stream = T.stream('statuses/filter', { track: '@quicksack' });
 
@@ -29,11 +29,11 @@ function question(eventMsg) {
 
   // looking for bot name
   if(msgTXT.startsWith("@" + botname)) {
-    if(msgTXT.includes(keyword)) {
+    //if(msgTXT.includes(keyword)) {
       var trigger = execPhp('/var/www/quicksack.li/quicktrigger.php');
 		
         filter = msgTXT.replace('@' + msgAT, '');
-        filter = filter.replace(keyword, '');
+        //filter = filter.replace(keyword, '');
         filter = filter.trim();
 	    filterArray = filter.split(" ");
 	    filterString = "";
@@ -73,7 +73,7 @@ function question(eventMsg) {
           });
         });
 
-    }
+    //}
   }
 }
 
